@@ -8,6 +8,8 @@
 Geen cloud, geen account, geen abonnement. Je praat met DraveJavis via je microfoon of je typt, en hij antwoordt hardop.
 Alles (taalmodel, stem en spraakherkenning) draait lokaal.
 
+**[⬇️ Download voor Windows](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-1.0-Windows.zip)** · [Snelgids (PDF)](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-Snelgids.pdf) · [Hoe installeer ik het?](#️-downloaden-en-starten-makkelijk-geen-python-nodig)
+
 ## Wat kan hij?
 - **Praten en luisteren**: houd de microfoonknop (of **F2**) ingedrukt, praat, en laat los. Hij antwoordt met een neurale stem, zin voor zin, terwijl het antwoord nog binnenkomt.
 - **Een lokaal taalmodel als brein**: werkt met elke OpenAI-compatibele server op je pc:
@@ -22,17 +24,30 @@ Alles (taalmodel, stem en spraakherkenning) draait lokaal.
 - Grote, duidelijke letters en een donker scherm met een bewegende kern die laat zien wat hij doet
   (klaar, luistert, denkt na, spreekt).
 
-## Installeren (Windows)
+## ⬇️ Downloaden en starten (makkelijk, geen Python nodig)
+
+### [👉 Download DraveJavis 1.0 voor Windows](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-1.0-Windows.zip)
+
+1. Klik op de link hierboven. Je downloadt een zip-bestand (± 130 MB).
+2. **Pak de zip uit**: rechtsklik op het bestand → **Alles uitpakken...**
+3. DraveJavis heeft een **brein** nodig: een gratis programma dat een taalmodel op je pc draait.
+   Installeer bijvoorbeeld **[LM Studio](https://lmstudio.ai)** of de **Llama-app**, en download daarin een model
+   (voor Nederlands bijvoorbeeld *Fietje 2*, voor Engels *Gemma 3* of *Qwen 2.5*). Laat dat programma open staan.
+4. Open de uitgepakte map en dubbelklik op **DraveJavis.exe**.
+5. Bij **Instellingen** kies je je taalmodel-programma (LM Studio, Llama-app, Ollama ...) en vul je je naam in.
+
+De eerste keer haalt DraveJavis zelf de stem en de spraakherkenning op; dat duurt even. Daarna werkt alles op je eigen pc.
+
+📖 **Alle commando's en uitleg:** [DraveJavis-Snelgids.pdf](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-Snelgids.pdf)
+
+> Windows laat bij de eerste keer misschien een blauw scherm zien ("Windows heeft uw pc beschermd"), omdat de app
+> nog onbekend is. Klik dan op **Meer informatie** → **Toch uitvoeren**.
+
+## Voor ontwikkelaars: vanaf de broncode
 1. Installeer **Python 3.10 – 3.13** van [python.org](https://www.python.org/downloads/).
-2. Installeer een lokale taalmodel-server, bijvoorbeeld de **Llama-app**, **LM Studio** of **Ollama**, en laad een model.
-   Voor Nederlands werkt *Fietje 2* goed; voor Engels bijvoorbeeld *Gemma 3* of *Qwen 2.5*.
-3. Dubbelklik **`Installeer-DraveJavis.bat`** (eenmalig; dit maakt een `.venv` en installeert de onderdelen).
-4. Start met **`Start-DraveJavis.bat`**. Bij **Instellingen** kies je je server, model, stem en taal.
-
-De eerste keer worden het stemmodel (neuvoice) en het spraakherkenningsmodel (Whisper) automatisch gedownload.
-Daarna werkt alles offline.
-
-**Zelf een EXE maken:** na stap 3 `Bouw-DraveJavis-EXE.bat` → `dist\DraveJavis\DraveJavis.exe`.
+2. Dubbelklik **`Installeer-DraveJavis.bat`** (maakt een `.venv` en installeert de onderdelen).
+3. Start met **`Start-DraveJavis.bat`**.
+4. Zelf een EXE maken: `Bouw-DraveJavis-EXE.bat` → `dist\DraveJavis\DraveJavis.exe`.
 
 ## Waar staan mijn gegevens?
 In `%APPDATA%\DraveJavis` (Windows) of `~/.drave_javis`: instellingen, het lopende gesprek, wat hij moet onthouden
@@ -65,7 +80,8 @@ or just type. It answers out loud with a neural voice (neuvoice), understands sp
 with any local OpenAI-compatible model server (Llama app / llama.cpp, LM Studio, Ollama, Jan).
 Built-in skills: time, date, timers, remembering facts, opening websites, and its own web search (DuckDuckGo) with source links. Dutch and English.
 
-**Install:** Python 3.10–3.13 → run `Installeer-DraveJavis.bat` → start a local model server → run
-`Start-DraveJavis.bat`. Models for voice and speech recognition are downloaded once on first use.
+**Easy install:** [download the Windows zip](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-1.0-Windows.zip),
+unzip it, start a local model app (e.g. LM Studio) with a model, and double-click **DraveJavis.exe**. No Python needed.
+**From source:** Python 3.10–3.13 → `Installeer-DraveJavis.bat` → `Start-DraveJavis.bat`.
 
 Made by **Dravenlock** (Roger & Claudio). Licensed under **GPL-3.0**. Donations welcome, never required.
