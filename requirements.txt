@@ -1,0 +1,8 @@
+PyQt6>=6.6
+numpy
+sounddevice
+faster-whisper
+neuvoice
+onnxruntime
+ddgs
+psutil

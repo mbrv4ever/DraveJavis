@@ -1,0 +1,119 @@
+<!doctype html>
+<html lang="nl">
+<head>
+<meta charset="utf-8">
+<title>Snelgids – DraveJavis</title>
+<style>
+  :root { --nacht:#05080f; --paneel:#0d1a2b; --rand:#1f6f99; --cyaan:#39d0ff; --goud:#ffb347; --tekst:#e8f3ff; --zacht:#9fb3c8; }
+  * { box-sizing:border-box; }
+  body { margin:0; background:var(--nacht); color:var(--tekst); font:20px/1.55 "Segoe UI", Arial, sans-serif; }
+  .blad { max-width:940px; margin:0 auto; padding:28px 20px 60px; }
+  .kop { display:flex; align-items:center; gap:22px; margin-bottom:10px; }
+  .kop img { width:96px; height:96px; }
+  h1 { font-size:44px; letter-spacing:3px; margin:0; color:#fff; }
+  .sub { color:var(--cyaan); font-size:20px; }
+  h2 { font-size:28px; color:var(--goud); border-bottom:2px solid var(--rand); padding-bottom:5px; margin:34px 0 12px; }
+  .kaart { background:var(--paneel); border:2px solid var(--rand); border-radius:12px; padding:12px 20px; margin:12px 0; }
+  table { width:100%; border-collapse:collapse; font-size:18px; }
+  th, td { text-align:left; padding:7px 10px; border-bottom:1px solid #1a3550; vertical-align:top; }
+  th { color:var(--zacht); font-weight:600; width:30%; }
+  .zin { color:var(--cyaan); font-weight:600; }
+  b { color:var(--goud); }
+  kbd { background:#122339; border:2px solid var(--rand); border-radius:6px; padding:0 8px; font-weight:700; font-family:inherit; }
+  .let { border-left:5px solid var(--goud); padding-left:14px; }
+  .tip { border-left:5px solid var(--cyaan); padding-left:14px; }
+  ol li, ul li { margin:5px 0; }
+  .voet { text-align:center; color:var(--zacht); margin-top:40px; font-size:16px; }
+  @media print {
+    body { background:#fff; color:#111; font-size:15px; }
+    .kaart { background:#f2f8fd; border-color:#9cc8e2; }
+    h1 { color:#0b2b45; } h2 { color:#b26a00; border-color:#9cc8e2; } .sub, .zin { color:#0b6d99; }
+    b { color:#8a5200; } th, .voet { color:#555; } kbd { background:#eee; border-color:#999; color:#111; }
+    tr, li { break-inside:avoid; } h2 { break-after:avoid; }
+  }
+</style>
+</head>
+<body>
+<div class="blad">
+  <div class="kop">
+    <img src="assets/icon.png" alt="">
+    <div><h1>DRAVEJAVIS</h1><div class="sub">Snelgids – je persoonlijke assistent, helemaal op je eigen pc</div></div>
+  </div>
+
+  <h2>1. Starten</h2>
+  <div class="kaart">
+    <ol>
+      <li>Start eerst de <b>Llama-app</b> (of LM Studio / Ollama) met een model. Bijvoorbeeld <b>Fietje 2</b> voor Nederlands.</li>
+      <li>Open <b>DraveJavis</b>. Onderaan zie je of het brein, de stem en de microfoon klaar zijn.</li>
+      <li>De <b>eerste keer</b> downloadt hij de stem en de spraakherkenning. Dat duurt even; daarna werkt het meteen.</li>
+    </ol>
+  </div>
+
+  <h2>2. Praten en typen</h2>
+  <div class="kaart">
+    <table>
+      <tr><th>Praten</th><td>Houd <b>🎙 Houd vast en praat</b> ingedrukt (of <kbd>F2</kbd>), praat, en laat los.</td></tr>
+      <tr><th>Typen</th><td>Typ onderin en druk op <kbd>Enter</kbd>.</td></tr>
+      <tr><th>Stil zijn</th><td>Knop <b>■ Stil</b> of <kbd>Esc</kbd>: hij stopt meteen met praten.</td></tr>
+      <tr><th>Opnieuw beginnen</th><td>Knop <b>Nieuw gesprek</b> (of <kbd>Ctrl</kbd>+<kbd>N</kbd>).</td></tr>
+      <tr><th>De kern</th><td><b>Blauw</b> = klaar of praat · <b>Oranje</b> = denkt na · <b>Groen</b> = luistert · <b>Paars</b> = zoekt online</td></tr>
+    </table>
+  </div>
+
+  <h2>3. Wat kun je zeggen?</h2>
+  <div class="kaart">
+    <table>
+      <tr><th>Tijd en datum</th><td><span class="zin">"Hoe laat is het?"</span> · <span class="zin">"Welke dag is het?"</span></td></tr>
+      <tr><th>Timer</th><td><span class="zin">"Zet een timer van 10 minuten"</span> · <span class="zin">"Zet een wekker over een kwartier"</span></td></tr>
+      <tr><th>Onthouden</th><td><span class="zin">"Onthoud dat mijn hond Max heet"</span> · <span class="zin">"Wat heb je onthouden?"</span> · <span class="zin">"Vergeet Max"</span> · <span class="zin">"Vergeet alles"</span></td></tr>
+      <tr><th>Online zoeken</th><td><span class="zin">"Zoek op internet naar ..."</span> of vraag gewoon iets actueels: <span class="zin">"Wat voor weer wordt het morgen?"</span>. Hij zoekt zelf en zet de <b>bronnen als links</b> eronder.</td></tr>
+      <tr><th>Website openen</th><td><span class="zin">"Open YouTube"</span> · <span class="zin">"Ga naar nos.nl"</span></td></tr>
+      <tr><th>Gewone vragen</th><td>Alles wat je wilt weten of bespreken. Hij antwoordt kort, want hij spreekt het uit.</td></tr>
+    </table>
+  </div>
+
+  <h2>4. De pc bedienen</h2>
+  <div class="kaart">
+    <table>
+      <tr><th>Programma starten</th><td><span class="zin">"Open Kladblok"</span> · <span class="zin">"Start DraveStudio"</span> · <span class="zin">"Open Edge"</span></td></tr>
+      <tr><th>Map openen</th><td><span class="zin">"Open mijn downloads"</span> · bureaublad, documenten, afbeeldingen, muziek, video's</td></tr>
+      <tr><th>Programma sluiten</th><td><span class="zin">"Sluit Chrome"</span> ⚠️ <i>vraagt eerst</i></td></tr>
+      <tr><th>Geluid en muziek</th><td><span class="zin">"Geluid harder"</span> · <span class="zin">"Zachter"</span> · <span class="zin">"Demp"</span> · <span class="zin">"Pauzeer de muziek"</span> · <span class="zin">"Volgende nummer"</span> · <span class="zin">"Vorige nummer"</span></td></tr>
+      <tr><th>Pc-gezondheid</th><td><span class="zin">"Hoe gaat het met de pc?"</span> · <span class="zin">"Status van mijn pc"</span> · <span class="zin">"Hoeveel ruimte heb ik nog?"</span></td></tr>
+      <tr><th>Bestand zoeken</th><td><span class="zin">"Zoek het bestand spelgids"</span>, daarna <span class="zin">"Open nummer 2"</span> (of klik op de link)</td></tr>
+      <tr><th>Schermafbeelding</th><td><span class="zin">"Maak een screenshot"</span>: komt in <b>Afbeeldingen\DraveJavis</b></td></tr>
+      <tr><th>Vergrendelen</th><td><span class="zin">"Vergrendel de pc"</span></td></tr>
+      <tr><th>Afsluiten / herstarten</th><td><span class="zin">"Sluit de pc af"</span> · <span class="zin">"Herstart de computer"</span> ⚠️ <i>vraagt eerst, wacht dan 1 minuut</i> · <span class="zin">"Annuleer afsluiten"</span></td></tr>
+      <tr><th>Opruimen</th><td><span class="zin">"Ruim de tijdelijke bestanden op"</span> · <span class="zin">"Leeg de prullenbak"</span> ⚠️ <i>vraagt eerst</i>. Alleen tijdelijke bestanden ouder dan een dag.</td></tr>
+    </table>
+    <p class="let"><b>Veilig:</b> bij ⚠️ vraagt hij <b>"Weet je het zeker?"</b>. Zeg of typ <b>ja</b> of <b>nee</b>, of klik op de knoppen. Hij voert alleen acties uit deze lijst uit, en systeemonderdelen van Windows sluit hij nooit.</p>
+  </div>
+
+  <h2>5. Instellingen</h2>
+  <div class="kaart">
+    <ul>
+      <li><b>Taal</b> (Nederlands / English), <b>jouw naam</b> en hoe hij je moet <b>aanspreken</b>.</li>
+      <li><b>Taalmodel-server</b> en <b>model</b> (knop "Zoek modellen").</li>
+      <li><b>Stem</b>: aan/uit, 12 stemmen (bijv. Cole, Leon, Lina), <b>spreeksnelheid</b>.</li>
+      <li><b>Tekst tegelijk met de stem tonen</b>, en <b>meteen versturen</b> na het praten.</li>
+      <li><b>Online zoeken</b> en <b>pc-acties</b> aan of uit.</li>
+      <li><b>Eigen programma's</b>: mappen met je eigen programma's (gescheiden door <b>;</b>), zodat hij die ook kan starten.</li>
+      <li><b>Persoonlijkheid</b>: leeg = standaard, of beschrijf zelf hoe DraveJavis moet zijn.</li>
+    </ul>
+  </div>
+
+  <h2>6. Als iets niet werkt</h2>
+  <div class="kaart">
+    <table>
+      <tr><th>"Geen taalmodel bereikbaar"</th><td>Start de Llama-app en laad een model. Bij Instellingen: klopt het adres?</td></tr>
+      <tr><th>Hij verstaat me niet</th><td>Praat iets dichter bij de microfoon en laat pas los als je klaar bent. Bij Instellingen kun je spraakherkenning <b>small</b> kiezen: preciezer, maar trager.</td></tr>
+      <tr><th>Geen stem</th><td>Kijk onderaan bij "stem". De eerste keer moet hij downloaden. Staat "Antwoorden hardop uitspreken" aan?</td></tr>
+      <tr><th>Hij vindt een programma niet</th><td>Zeg de naam zoals die in het Startmenu staat, of voeg de map toe bij <b>Eigen programma's</b>.</td></tr>
+    </table>
+    <p class="tip"><b>Goed om te weten:</b> DraveJavis gebruikt een klein lokaal taalmodel. Dat is privé en gratis, maar kan zich bij moeilijke vragen vergissen. Bij vragen over de pc meet hij eerst echt, zodat hij geen cijfers verzint.</p>
+  </div>
+
+  <div class="voet">DraveJavis 1.0 · Dravenlock (Roger &amp; Claudio) · Je gegevens blijven op je eigen pc (%APPDATA%\DraveJavis).</div>
+</div>
+</body>
+</html>
