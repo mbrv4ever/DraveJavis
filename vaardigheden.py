@@ -4,6 +4,7 @@
 
 doe(tekst, geheugen, taal) -> None (laat het taalmodel antwoorden)
                            of (antwoord, actie) met actie None / ("timer", sec, label) / ("open", url)
+                           / ("zoek", term) / ("ochtend",) / ("plaats", naam) / ("map", pad)
 """
 from __future__ import annotations
 
@@ -112,6 +113,45 @@ def doe(tekst, geheugen, taal="nl"):
         lijst = "; ".join(re.sub(r"\b(mijn|my)\b", lambda m: "jouw" if m.group(1) == "mijn" else "your", f,
                                  flags=re.I) for f in geheugen.feiten[-12:])
         return (("Dit heb ik onthouden: %s." % lijst) if nl else ("This is what I remember: %s." % lijst)), None
+    # ---- ochtendoverzicht
+    if re.match(r"^(goede ?morgen|goeiemorgen|morgen javis|ochtendoverzicht|ochtend overzicht|dagoverzicht|"
+                r"wat staat er (vandaag|op de planning)|wat heb ik vandaag|wat moet ik vandaag|"
+                r"good morning|morning brief|what'?s on today)\b", t):
+        return None, ("ochtend",)
+    # ---- plaats voor het weer
+    m = re.match(r"^(mijn plaats is|ik woon in|mijn woonplaats is|stel (mijn )?plaats in op|my (city|town|location) is|"
+                 r"i live in)\s+(.+)$", tekst.strip().rstrip(".!? "), re.I)
+    if m:
+        return None, ("plaats", m.group(m.lastindex).strip())
+    # ---- notities (komen als tekstbestand in je geheugenmap)
+    m = re.match(r"^(noteer|notitie|maak een notitie|schrijf op|zet op mijn lijst|note|make a note|write down)"
+                 r"( (dat|that|:))?\s*:?\s+(.+)$", tekst.strip(), re.I)
+    if m:
+        n = geheugen.noteer(m.group(4))
+        return (("Genoteerd: %s." % n) if nl else ("Noted: %s." % n)), None
+    # ---- zoeken in het eigen geheugen
+    m = re.match(r"^(wat weet je (nog )?over|wat weet jij (nog )?over|zoek in (mijn|je|jouw) geheugen( naar| op)?|"
+                 r"wat heb ik (gezegd|genoteerd|verteld) over|what do you know about|search (my )?memory for)\s+(.+)$", t)
+    if m and not re.match(r"^(mij|me|mezelf)$", m.group(m.lastindex).strip()):
+        vraag = m.group(m.lastindex)
+        hits = geheugen.zoek(vraag, n=4)
+        if not hits:
+            return (("Daar heb ik niets over in mijn geheugen." if nl else "I have nothing about that in my memory.")), None
+        delen = []
+        for d, soort, regel in hits:
+            regel = re.sub(r"\*\*", "", regel)
+            regel = re.sub(r"^\d{1,2}:\d{2}\s*", "", regel)
+            if d and nl:
+                try:
+                    dd = datetime.date.fromisoformat(d)
+                    regel = "op %d %s: %s" % (dd.day, MAANDEN[dd.month - 1], regel)
+                except Exception:
+                    pass
+            delen.append(regel)
+        return (("Dit vond ik in mijn geheugen: %s." if nl else "This is what I found in my memory: %s.") % "; ".join(delen)), None
+    if re.search(r"\b(open (mijn|je|jouw|het) geheugen(map)?|toon (mijn|je) geheugen|open my memory)\b", t):
+        return (("Ik open je geheugenmap. Daar staan gewone tekstbestanden die je zelf mag aanpassen." if nl
+                 else "Opening your memory folder.")), ("map", geheugen.map())
     # ---- websites
     m = re.match(r"^(open|ga naar|go to|start)\s+(de website\s+|website\s+)?([\w.\-/]+)$", t)
     if m:

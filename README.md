@@ -8,7 +8,7 @@
 Geen cloud, geen account, geen abonnement. Je praat met DraveJavis via je microfoon of je typt, en hij antwoordt hardop.
 Alles (taalmodel, stem en spraakherkenning) draait lokaal.
 
-**[⬇️ Download voor Windows](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-1.0-Windows.zip)** · [Snelgids (PDF)](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-Snelgids.pdf) · [Hoe installeer ik het?](#️-downloaden-en-starten-makkelijk-geen-python-nodig)
+**[⬇️ Download voor Windows](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-1.1-Windows.zip)** · [Snelgids (PDF)](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-Snelgids.pdf) · [Hoe installeer ik het?](#️-downloaden-en-starten-makkelijk-geen-python-nodig)
 
 ## Wat kan hij?
 - **Praten en luisteren**: houd de microfoonknop (of **F2**) ingedrukt, praat, en laat los. Hij antwoordt met een neurale stem, zin voor zin, terwijl het antwoord nog binnenkomt.
@@ -20,13 +20,20 @@ Alles (taalmodel, stem en spraakherkenning) draait lokaal.
 - **Zelf online zoeken**: vraag naar het weer, nieuws of openingstijden, of zeg "zoek op internet naar ...".
   DraveJavis zoekt zelf (DuckDuckGo), leest de beste pagina's, vertelt het antwoord en zet de **bronnen als links**
   eronder. Je browser gaat niet open. Alleen de zoekvraag gaat het internet op (uit te zetten bij Instellingen).
+- **Ochtendoverzicht** (nieuw in 1.1): zeg *"goedemorgen"* en hij vertelt het **weer** (ook storm, regen en
+  windstoten in gewone taal), je **afspraken uit [DraveAgenda](https://github.com/mbrv4ever/DraveAgenda)** en wat je
+  voor vandaag hebt genoteerd. Bij de eerste start van de dag doet hij het vanzelf (uit te zetten).
+  Stel je plaats in met *"mijn plaats is Breda"*.
+- **Geheugen als gewone tekstbestanden** (nieuw in 1.1): wat hij onthoudt, je notities (*"noteer ..."*) en de
+  gesprekken per dag staan in leesbare `.md`-bestanden die je zelf mag aanpassen, met een snelle zoekindex (SQLite)
+  ernaast. Vraag *"wat weet je over ...?"* en hij zoekt in alles wat je eerder zei of noteerde.
 - **Nederlands en Engels.** Eigen naam, aanspreekvorm en persoonlijkheid in te stellen.
 - Grote, duidelijke letters en een donker scherm met een bewegende kern die laat zien wat hij doet
   (klaar, luistert, denkt na, spreekt).
 
 ## ⬇️ Downloaden en starten (makkelijk, geen Python nodig)
 
-### [👉 Download DraveJavis 1.0 voor Windows](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-1.0-Windows.zip)
+### [👉 Download DraveJavis 1.1 voor Windows](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-1.1-Windows.zip)
 
 1. Klik op de link hierboven. Je downloadt een zip-bestand (± 130 MB).
 2. **Pak de zip uit**: rechtsklik op het bestand → **Alles uitpakken...**
@@ -50,8 +57,9 @@ De eerste keer haalt DraveJavis zelf de stem en de spraakherkenning op; dat duur
 4. Zelf een EXE maken: `Bouw-DraveJavis-EXE.bat` → `dist\DraveJavis\DraveJavis.exe`.
 
 ## Waar staan mijn gegevens?
-In `%APPDATA%\DraveJavis` (Windows) of `~/.drave_javis`: instellingen, het lopende gesprek, wat hij moet onthouden
-en de spraakherkenningsmodellen. Niets verlaat je pc, behalve een zoekvraag als hij online zoekt (uit te zetten).
+In `%APPDATA%\DraveJavis` (Windows) of `~/.drave_javis`: instellingen, het lopende gesprek en de
+spraakherkenningsmodellen. Het geheugen staat in de map **`Geheugen`** daarin: `feiten.md`, `notities\` en
+`gesprekken\` (gewone tekstbestanden), plus `zoekindex.db`. Gesprekken bewaren kun je uitzetten bij Instellingen. Niets verlaat je pc, behalve een zoekvraag als hij online zoekt (uit te zetten).
 
 ## Onderdelen en dank
 | Onderdeel | Waarvoor | Licentie |
@@ -78,9 +86,9 @@ en met de broncode beschikbaar zijn. Copyright © 2026 Dravenlock (Roger & Claud
 **DraveJavis** is a local, private voice assistant for Windows. Hold the microphone button (or **F2**) and talk,
 or just type. It answers out loud with a neural voice (neuvoice), understands speech with faster-whisper, and thinks
 with any local OpenAI-compatible model server (Llama app / llama.cpp, LM Studio, Ollama, Jan).
-Built-in skills: time, date, timers, remembering facts, opening websites, and its own web search (DuckDuckGo) with source links. Dutch and English.
+Built-in skills: time, date, timers, remembering facts, opening websites, and its own web search (DuckDuckGo) with source links. New in 1.1: a spoken **morning briefing** (weather + DraveAgenda appointments) and a **memory made of plain Markdown files** with a fast SQLite search index. Dutch and English.
 
-**Easy install:** [download the Windows zip](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-1.0-Windows.zip),
+**Easy install:** [download the Windows zip](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-1.1-Windows.zip),
 unzip it, start a local model app (e.g. LM Studio) with a model, and double-click **DraveJavis.exe**. No Python needed.
 **From source:** Python 3.10–3.13 → `Installeer-DraveJavis.bat` → `Start-DraveJavis.bat`.
 

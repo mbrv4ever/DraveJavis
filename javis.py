@@ -33,9 +33,10 @@ import stem as S
 import vaardigheden as V
 import zoeken as Z
 import pc as P
+import ochtend as OC
 
 APP = "DraveJavis"
-VERSIE = "1.0"
+VERSIE = "1.1"
 
 
 def hier(*p):
@@ -195,6 +196,7 @@ class Sein(QObject):
     begin = pyqtSignal(str)
     pc = pyqtSignal(object)
     modellen = pyqtSignal(list)
+    zeg = pyqtSignal(str)
 
 
 # =============================================================================== instellingen
@@ -264,6 +266,20 @@ class Instellingen(QDialog):
         self.meteen = QCheckBox("Na het praten meteen versturen")
         self.meteen.setChecked(cfg.get("meteen_versturen", True))
         f.addRow("", self.meteen)
+        self.ochtend = QCheckBox("Ochtendoverzicht bij de eerste start van de dag (weer + agenda)")
+        self.ochtend.setChecked(cfg.get("ochtend_auto", True))
+        f.addRow("Ochtend", self.ochtend)
+        pl = cfg.get("plaats") or {}
+        self.plaats_lab = QLabel(("Plaats voor het weer: %s  (wijzig door te zeggen: 'mijn plaats is ...')" % pl["naam"])
+                                 if pl.get("naam") else "Nog geen plaats. Zeg of typ: 'mijn plaats is Breda'.")
+        self.plaats_lab.setWordWrap(True)
+        f.addRow("", self.plaats_lab)
+        self.bewaren = QCheckBox("Gesprekken bewaren in de geheugenmap (gewone tekstbestanden)")
+        self.bewaren.setChecked(cfg.get("gesprekken_bewaren", True))
+        rij2 = QHBoxLayout(); rij2.addWidget(self.bewaren, 1)
+        gm = QPushButton("Geheugenmap openen"); gm.clicked.connect(lambda: os.startfile(G.map_pad()))
+        rij2.addWidget(gm)
+        f.addRow("Geheugen", rij2)
         self.pers = QTextEdit(); self.pers.setAcceptRichText(False); self.pers.setFixedHeight(130)
         self.pers.setPlainText(cfg.get("persoonlijkheid", ""))
         self.pers.setPlaceholderText("Leeg = standaard persoonlijkheid. Of beschrijf zelf hoe DraveJavis moet zijn.")
@@ -300,6 +316,7 @@ class Instellingen(QDialog):
                  snelheid=round(self.snelheid.value(), 2), whisper=self.whisper.currentData(),
                  meteen_versturen=self.meteen.isChecked(), tekst_met_stem=self.sync.isChecked(),
                  online_zoeken=self.online.isChecked(), pc_acties=self.pcacties.isChecked(),
+                 ochtend_auto=self.ochtend.isChecked(), gesprekken_bewaren=self.bewaren.isChecked(),
                  programma_mappen=self.progmappen.text().strip(), persoonlijkheid=self.pers.toPlainText().strip())
         return c
 
@@ -322,6 +339,7 @@ class Javis(QMainWindow):
         self.sein.gehoord.connect(self._gehoord)
         self.sein.begin.connect(self._begin)
         self.sein.pc.connect(self._pc_klaar)
+        self.sein.zeg.connect(self._klaar_extra)
         self.bevestig = None
         self.laatste_bestanden = []
         P.zet_extra_mappen((c.get("programma_mappen") or "").split(";"))
@@ -400,6 +418,10 @@ class Javis(QMainWindow):
         self.klok = QTimer(self); self.klok.timeout.connect(self._klok); self.klok.start(120)
         self.stem.warm_op()
         threading.Thread(target=self._zoek_model, daemon=True).start()
+        # ochtendoverzicht bij de eerste start van de dag (tussen 5 en 12 uur)
+        nu = datetime.datetime.now()
+        if c.get("ochtend_auto", True) and 5 <= nu.hour < 12 and c.get("laatste_ochtend") != nu.date().isoformat():
+            QTimer.singleShot(3500, self._ochtend)
 
     # ------------------------------------------------------------ hulp
     def t(self, sl):
@@ -549,6 +571,14 @@ class Javis(QMainWindow):
             self.gh.voeg_toe("user", tekst)
             self._start_zoek(uit[1][1])
             return
+        if uit and uit[1] and uit[1][0] == "ochtend":
+            self.gh.voeg_toe("user", tekst)
+            self._ochtend()
+            return
+        if uit and uit[1] and uit[1][0] == "plaats":
+            self.gh.voeg_toe("user", tekst)
+            self._zet_plaats(uit[1][1])
+            return
         if uit:
             antwoord, actie = uit
             self.gh.voeg_toe("user", tekst)
@@ -560,6 +590,11 @@ class Javis(QMainWindow):
                 self.timers.append((time.time() + actie[1], actie[2]))
             elif actie and actie[0] == "open":
                 webbrowser.open(actie[1])
+            elif actie and actie[0] == "map":
+                try:
+                    os.startfile(actie[1])
+                except Exception:
+                    pass
             return
         self.gh.voeg_toe("user", tekst)
         self.bezig = True
@@ -575,6 +610,53 @@ class Javis(QMainWindow):
         meten = self.gh.cfg.get("pc_acties", True) and any(P.over_pc(m["content"]) for m in self.gh.gesprek[-3:]
                                                            if m["role"] == "user")
         threading.Thread(target=self._denk, args=(berichten, meten), daemon=True).start()
+
+    # ------------------------------------------------------------ ochtendoverzicht en plaats
+    def _ochtend(self):
+        """Weer + agenda + notities, in een eigen draad (het weer komt van internet)."""
+        if self.bezig:
+            return
+        self.bezig = True
+        self.ververs_chat()
+
+        def werk():
+            try:
+                tekst = OC.overzicht(self.gh, self.taal)
+            except Exception as e:
+                tekst = "Het ochtendoverzicht lukte niet: %s" % e
+            self.sein.zeg.emit("OCHTEND|" + tekst)
+        threading.Thread(target=werk, daemon=True).start()
+
+    def _zet_plaats(self, naam):
+        self.bezig = True
+        self.ververs_chat()
+
+        def werk():
+            try:
+                import weer_engine as W
+                r = W.zoek_plaats(naam, aantal=1)
+            except Exception:
+                r = []
+            if not r:
+                self.sein.zeg.emit("ZEG|" + ("Die plaats kon ik niet vinden: %s." % naam if self.taal == "nl"
+                                             else "I couldn't find that place: %s." % naam))
+                return
+            p = r[0]
+            self.gh.cfg["plaats"] = dict(naam=p["naam"], regio=p.get("regio", ""), land=p.get("land", ""),
+                                         lat=p["lat"], lon=p["lon"])
+            self.gh.bewaar_cfg()
+            waar = p["naam"] + (", " + p["regio"] if p.get("regio") else "")
+            self.sein.zeg.emit("ZEG|" + ("Goed, voor het weer gebruik ik voortaan %s." % waar if self.taal == "nl"
+                                         else "Got it, I'll use %s for the weather." % waar))
+        threading.Thread(target=werk, daemon=True).start()
+
+    def _klaar_extra(self, bericht):
+        soort, _, tekst = bericht.partition("|")
+        self.bezig = False
+        if soort == "OCHTEND":
+            self.gh.cfg["laatste_ochtend"] = datetime.date.today().isoformat()
+            self.gh.bewaar_cfg()
+        self._zeg_kort(tekst)
 
     # ------------------------------------------------------------ pc-acties
     def _zeg_kort(self, zin, opslaan=True):
