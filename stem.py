@@ -26,19 +26,50 @@ FRAME = 0.03
 _EMOJI = re.compile("[\U0001F000-\U0001FAFF☀-➿️]")
 
 
-def spreekbaar(t):
-    """Maak tekst geschikt om uit te spreken: geen markdown, links of emoji."""
+# Woorden en tekens die de stem anders verkeerd uitspreekt (Nederlands).
+_DOMEIN = {"nl": "punt en el", "com": "punt com", "be": "punt bee ee", "org": "punt org",
+           "net": "punt net", "eu": "punt ee uu", "de": "punt dee ee", "io": "punt ie oo"}
+_AFKORTING = [
+    (r"\bkm/u\b", "kilometer per uur"), (r"\bkm/h\b", "kilometer per uur"),
+    (r"(\d)\s?km\b", r"\1 kilometer"), (r"(\d)\s?mm\b", r"\1 millimeter"),
+    (r"(\d)\s?cm\b", r"\1 centimeter"), (r"(\d)\s?kg\b", r"\1 kilo"),
+    (r"(\d)\s?°C\b", r"\1 graden"), (r"(\d)\s?°", r"\1 graden"), (r"(\d)\s?%", r"\1 procent"),
+    (r"(\d)\s?MB\b", r"\1 megabyte"), (r"(\d)\s?GB\b", r"\1 gigabyte"),
+    (r"€\s?(\d+(?:,\d+)?)", r"\1 euro"), (r"\bt/m\b", "tot en met"), (r"\bbijv\.", "bijvoorbeeld"),
+    (r"\bbv\.", "bijvoorbeeld"), (r"\benz\.", "enzovoort"), (r"\bo\.a\.", "onder andere"),
+    (r"\bi\.p\.v\.", "in plaats van"), (r"\bz\.s\.m\.", "zo snel mogelijk"), (r"\bnr\.", "nummer"),
+    (r"\bca\.", "ongeveer"), (r"\bmin\.", "minuten"), (r"\bAI\b", "aa ie"), (r"\bPC\b|\bpc\b", "pee see"),
+    (r"\bUSB\b", "uu es bee"), (r"\bPDF\b|\bpdf\b", "pee dee ef"), (r"\bexe\b", "ex ee"),
+    (r"\bGitHub\b", "Git hub"), (r"\be-mail\b", "iemeel"), (r"\bWi-?Fi\b|\bwifi\b", "waaifaai"),
+    (r"@", " apenstaartje "),
+]
+
+
+def _domein(m):
+    """www.dravenlock.nl/x -> dravenlock punt en el"""
+    naam, ext = m.group(1), m.group(2).lower()
+    naam = re.sub(r"^www\.", "", naam, flags=re.I).replace(".", " punt ")
+    return "%s %s" % (naam, _DOMEIN.get(ext, "punt " + " ".join(ext)))
+
+
+def spreekbaar(t, taal="nl"):
+    """Maak tekst geschikt om uit te spreken: geen markdown, code of emoji; links en afkortingen voluit."""
     t = re.sub(r"```.*?```", " ", t, flags=re.S)
-    t = re.sub(r"https?://\S+", "", t)
+    t = re.sub(r"\[([^\]]+)\]\([^)]+\)", r"\1", t)            # [tekst](link) -> tekst
+    t = re.sub(r"https?://", "", t)
     t = re.sub(r"[*_#`>|~]", "", t)
     t = _EMOJI.sub("", t)
     t = re.sub(r"\bDrave\s?Javis\b", "Dreev Djavis", t, flags=re.I)
+    if taal == "nl":
+        t = re.sub(r"\b((?:[\w-]+\.)*[\w-]+)\.(nl|com|be|org|net|eu|de|io)\b(?:/\S*)?", _domein, t, flags=re.I)
+        for p, n in _AFKORTING:
+            t = re.sub(p, n, t)
     t = re.sub(r"\s+", " ", t).strip()
     return t
 
 
 class Stem:
-    def __init__(self, stem="Cole", taal="nl", snelheid=1.0):
+    def __init__(self, stem="Leon", taal="nl", snelheid=1.0):
         self.stem = stem
         self.taal = taal
         self.snelheid = snelheid
@@ -89,7 +120,7 @@ class Stem:
                     if n.lower() == (self.stem or "").lower():
                         kies = n
                 if kies is None and self.stemmen:
-                    voorkeur = [n for n in ("Cole", "Leon", "Cem") if n in self.stemmen]
+                    voorkeur = [n for n in ("Leon", "Cole", "Cem") if n in self.stemmen]
                     kies = (voorkeur or self.stemmen)[0]
                 self.stem = kies
                 self._stijl = tts.get_voice_style(kies) if kies else None
@@ -115,7 +146,7 @@ class Stem:
     # hoorbaar begint (handig om de tekst tegelijk met de stem te tonen).
     def zeg(self, tekst, label=None):
         """Zin in de wachtrij zetten (niet-blokkerend). label = wat er bij het begin getoond wordt."""
-        schoon = spreekbaar(tekst or "")
+        schoon = spreekbaar(tekst or "", self.taal)
         if not self.aan:
             return False
         if not schoon:

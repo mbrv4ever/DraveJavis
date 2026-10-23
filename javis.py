@@ -36,7 +36,7 @@ import pc as P
 import ochtend as OC
 
 APP = "DraveJavis"
-VERSIE = "1.1"
+VERSIE = "1.1.1"
 
 
 def hier(*p):
@@ -238,9 +238,9 @@ class Instellingen(QDialog):
         self.stem_aan = QCheckBox("Antwoorden hardop uitspreken"); self.stem_aan.setChecked(cfg.get("stem_aan", True))
         f.addRow("Stem", self.stem_aan)
         self.stem = QComboBox(); self.stem.setEditable(True)
-        for s in (stemmen or ["Cole", "Leon", "Cem", "Giray", "Mustafa", "Sarp", "Soras", "Alina", "Lina", "Linda", "Selin", "Sema"]):
+        for s in (stemmen or ["Leon", "Cole", "Cem", "Giray", "Mustafa", "Sarp", "Soras", "Alina", "Lina", "Linda", "Selin", "Sema"]):
             self.stem.addItem(s)
-        self.stem.setCurrentText(cfg.get("stem", "Cole"))
+        self.stem.setCurrentText(cfg.get("stem", "Leon"))
         f.addRow("Welke stem", self.stem)
         self.snelheid = QDoubleSpinBox(); self.snelheid.setRange(0.6, 1.8); self.snelheid.setSingleStep(0.05)
         self.snelheid.setValue(float(cfg.get("snelheid", 1.05)))
@@ -271,7 +271,7 @@ class Instellingen(QDialog):
         f.addRow("Ochtend", self.ochtend)
         pl = cfg.get("plaats") or {}
         self.plaats_lab = QLabel(("Plaats voor het weer: %s  (wijzig door te zeggen: 'mijn plaats is ...')" % pl["naam"])
-                                 if pl.get("naam") else "Nog geen plaats. Zeg of typ: 'mijn plaats is Breda'.")
+                                 if pl.get("naam") else "Nog geen plaats. Zeg of typ: 'mijn plaats is Amsterdam'.")
         self.plaats_lab.setWordWrap(True)
         f.addRow("", self.plaats_lab)
         self.bewaren = QCheckBox("Gesprekken bewaren in de geheugenmap (gewone tekstbestanden)")
@@ -312,7 +312,7 @@ class Instellingen(QDialog):
                 model = ""
         c.update(taal=self.taal.currentData(), naam=self.naam.text().strip(), aanspreek=self.aanspreek.text().strip(),
                  server=self.server.text().strip() or B.SERVERS[0][1], model=model or "",
-                 stem_aan=self.stem_aan.isChecked(), stem=self.stem.currentText().strip() or "Cole",
+                 stem_aan=self.stem_aan.isChecked(), stem=self.stem.currentText().strip() or "Leon",
                  snelheid=round(self.snelheid.value(), 2), whisper=self.whisper.currentData(),
                  meteen_versturen=self.meteen.isChecked(), tekst_met_stem=self.sync.isChecked(),
                  online_zoeken=self.online.isChecked(), pc_acties=self.pcacties.isChecked(),
@@ -329,7 +329,7 @@ class Javis(QMainWindow):
         c = self.gh.cfg
         self.taal = c.get("taal", "nl")
         self.brein = B.Brein(c.get("server"), c.get("model"))
-        self.stem = S.Stem(c.get("stem", "Cole"), self.taal, c.get("snelheid", 1.05))
+        self.stem = S.Stem(c.get("stem", "Leon"), self.taal, c.get("snelheid", 1.05))
         self.stem.aan = c.get("stem_aan", True)
         self.oren = O.Oren(self.gh.modelmap(), c.get("whisper", "base"), self.taal)
         self.sein = Sein()

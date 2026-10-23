@@ -30,7 +30,7 @@ GMAP = os.path.join(DATA, "Geheugen")
 
 STANDAARD = dict(
     taal="nl", naam="", aanspreek="", server="http://127.0.0.1:9931/v1", model="",
-    stem_aan=True, stem="Cole", snelheid=1.1, whisper="base", persoonlijkheid="",
+    stem_aan=True, stem="Leon", snelheid=1.1, whisper="base", persoonlijkheid="",
     meteen_versturen=True, tekst_met_stem=True, online_zoeken=True, pc_acties=True, programma_mappen="", max_gesprek=30,
     plaats=None, ochtend_auto=True, laatste_ochtend="", gesprekken_bewaren=True,
 )

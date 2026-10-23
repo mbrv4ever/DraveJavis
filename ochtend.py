@@ -59,7 +59,7 @@ def weer_zin(plaats, taal="nl"):
     d = w["dagen"][0]
     h = w.get("huidig") or {}
     tekst = d.get("tekst") or ""
-    # "Vandaag: storm met ..." -> "In Breda vandaag storm met ..."
+    # "Vandaag: storm met ..." -> "In Amsterdam vandaag storm met ..."
     kern = tekst.split(":", 1)[1].strip() if ":" in tekst else tekst
     zin = []
     if taal == "nl":
@@ -143,7 +143,7 @@ def overzicht(geheugen, taal="nl"):
     if w:
         delen.append(w)
     elif taal == "nl":
-        delen.append("Wil je ook het weer horen? Zeg dan bijvoorbeeld: mijn plaats is Breda.")
+        delen.append("Wil je ook het weer horen? Zeg dan bijvoorbeeld: mijn plaats is Amsterdam.")
     a = agenda_zinnen(taal, nu.date())
     if a:
         delen.append(a)
