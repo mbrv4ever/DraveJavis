@@ -10,6 +10,12 @@ Alles (taalmodel, stem en spraakherkenning) draait lokaal.
 
 **[⬇️ Download voor Windows](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-1.1.1-Windows.zip)** · [Snelgids (PDF)](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-Snelgids.pdf) · [Hoe installeer ik het?](#️-downloaden-en-starten-makkelijk-geen-python-nodig)
 
+## 🎬 Uitlegvideo
+
+[![Uitlegvideo DraveJavis](https://dravenlock.nl/video/DraveJavis.jpg)](https://dravenlock.nl/video/DraveJavis.mp4)
+
+[▶ Bekijk de uitlegvideo](https://dravenlock.nl/video/DraveJavis.mp4) (ongeveer 2 minuten, Nederlands)
+
 ## Wat kan hij?
 - **Praten en luisteren**: houd de microfoonknop (of **F2**) ingedrukt, praat, en laat los. Hij antwoordt met een neurale stem, zin voor zin, terwijl het antwoord nog binnenkomt.
 - **Een lokaal taalmodel als brein**: werkt met elke OpenAI-compatibele server op je pc:
