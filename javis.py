@@ -24,7 +24,8 @@ from PyQt6.QtCore import Qt, QTimer, QObject, pyqtSignal, QRectF, QPointF
 from PyQt6.QtGui import QIcon, QPainter, QColor, QPen, QRadialGradient, QFont, QKeySequence, QShortcut
 from PyQt6.QtWidgets import (QApplication, QWidget, QMainWindow, QLabel, QPushButton, QLineEdit, QTextBrowser,
                              QHBoxLayout, QVBoxLayout, QDialog, QFormLayout, QComboBox, QCheckBox,
-                             QDoubleSpinBox, QTextEdit, QMessageBox, QDialogButtonBox, QSizePolicy)
+                             QDoubleSpinBox, QTextEdit, QMessageBox, QDialogButtonBox, QSizePolicy,
+                             QScrollArea, QFrame)
 
 import brein as B
 import geheugen as G
@@ -36,7 +37,7 @@ import pc as P
 import ochtend as OC
 
 APP = "DraveJavis"
-VERSIE = "1.1.1"
+VERSIE = "1.1.2"
 
 
 def hier(*p):
@@ -205,9 +206,16 @@ class Instellingen(QDialog):
         super().__init__(ouder)
         self.setWindowTitle("%s - instellingen" % APP)
         self.setStyleSheet(STIJL)
-        self.resize(760, 760)
+        # schuif-instellingen-1.1.2: past op elk scherm; knoppen blijven altijd onderaan zichtbaar
+        try:
+            _sg = QApplication.primaryScreen().availableGeometry(); _w, _h = _sg.width(), _sg.height()
+        except Exception:
+            _w, _h = 1280, 800
         self.cfg = dict(cfg)
-        f = QFormLayout(self)
+        buiten = QVBoxLayout(self)
+        _vak = QScrollArea(); _vak.setWidgetResizable(True); _vak.setFrameShape(QFrame.Shape.NoFrame)
+        _bin = QWidget(); _vak.setWidget(_bin); buiten.addWidget(_vak, 1)
+        f = QFormLayout(_bin)
         f.setVerticalSpacing(12)
         self.taal = QComboBox(); self.taal.addItem("Nederlands", "nl"); self.taal.addItem("English", "en")
         self.taal.setCurrentIndex(0 if cfg.get("taal") == "nl" else 1)
@@ -286,7 +294,10 @@ class Instellingen(QDialog):
         f.addRow("Persoonlijkheid", self.pers)
         kn = QDialogButtonBox(QDialogButtonBox.StandardButton.Ok | QDialogButtonBox.StandardButton.Cancel)
         kn.accepted.connect(self.accept); kn.rejected.connect(self.reject)
-        f.addRow(kn)
+        buiten.addWidget(kn)
+        _vak.setHorizontalScrollBarPolicy(Qt.ScrollBarPolicy.ScrollBarAlwaysOff)
+        _bw = _bin.minimumSizeHint().width() + 46
+        self.resize(min(max(760, _bw), _w - 40), min(760, _h - 80))
 
     def _server(self, i):
         url = self.server_keuze.itemData(i)
