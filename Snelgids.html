@@ -43,7 +43,8 @@
   <h2>1. Starten</h2>
   <div class="kaart">
     <ol>
-      <li>Start eerst de <b>Llama-app</b> (of LM Studio / Ollama) met een model. Bijvoorbeeld <b>Fietje 2</b> voor Nederlands.</li>
+      <li><b>Eerste keer:</b> kies <b>Instellingen → Motor downloaden...</b> en kies een map (liefst niet op C:). DraveJavis haalt dan eenmalig zijn <b>eigen motor</b> en het taalmodel <b>Qwen2.5 3B</b> op (samen ongeveer 2 GB). Daarna heb je geen andere app meer nodig.</li>
+      <li>Heb je liever de <b>Llama-app</b>, LM Studio of Ollama? Zet dan bij Instellingen het vinkje "Eigen motor" uit en kies de server.</li>
       <li>Open <b>DraveJavis</b>. Onderaan zie je of het brein, de stem en de microfoon klaar zijn.</li>
       <li>De <b>eerste keer</b> downloadt hij de stem en de spraakherkenning. Dat duurt even; daarna werkt het meteen.</li>
     </ol>
@@ -79,7 +80,8 @@
       <tr><th>Plaats voor het weer</th><td><span class="zin">"Mijn plaats is Amsterdam"</span> · <span class="zin">"Ik woon in Utrecht"</span></td></tr>
       <tr><th>Noteren</th><td><span class="zin">"Noteer morgen brood halen"</span> · <span class="zin">"Schrijf op: tandarts bellen"</span>. Staat er <b>morgen</b> in, dan hoor je het de volgende ochtend terug.</td></tr>
       <tr><th>Zoeken in je geheugen</th><td><span class="zin">"Wat weet je over de tandarts?"</span> · <span class="zin">"Wat heb ik gezegd over de vakantie?"</span>. Hij zoekt in je notities, feiten en eerdere gesprekken.</td></tr>
-      <tr><th>Geheugenmap</th><td><span class="zin">"Open mijn geheugen"</span> of de knop bij Instellingen. Alles staat in <b>gewone tekstbestanden</b> die je zelf mag lezen en aanpassen: <b>feiten.md</b>, <b>notities</b> en <b>gesprekken</b> (per dag). Gesprekken bewaren kun je uitzetten bij Instellingen.</td></tr>
+      <tr><th>Laatjes (nieuw in 1.2)</th><td>Wat je hem laat onthouden, legt hij in een <b>laatje</b> per onderwerp: <b>Mensen, Dieren, Interesses, Eten, Werk, Thuis, Afspraken</b> of <b>Overig</b>. Hij zegt erbij in welk laatje. Bij een vraag pakt hij eerst het juiste laatje. <span class="zin">"Wat weet je over mij?"</span> geeft alles per laatje.</td></tr>
+      <tr><th>Geheugenmap</th><td><span class="zin">"Open mijn geheugen"</span> of de knop bij Instellingen. Alles staat in <b>gewone tekstbestanden</b> die je zelf mag lezen en aanpassen: de map <b>laatjes</b> (wat je hem laat onthouden, per onderwerp), <b>notities</b> en <b>gesprekken</b> (per dag). Gesprekken bewaren kun je uitzetten bij Instellingen.</td></tr>
     </table>
   </div>
 
@@ -104,7 +106,9 @@
   <div class="kaart">
     <ul>
       <li><b>Taal</b> (Nederlands / English), <b>jouw naam</b> en hoe hij je moet <b>aanspreken</b>.</li>
-      <li><b>Taalmodel-server</b> en <b>model</b> (knop "Zoek modellen").</li>
+      <li><b>Motor</b>: "Eigen motor gebruiken" (aanbevolen) met de knop <b>Motor downloaden...</b> of <b>Andere map...</b>. Staat er al een DraveMotor op je pc (bijvoorbeeld van Dave), dan vindt hij die zelf.</li>
+      <li><b>Taalmodel-server</b> en <b>model</b> (knop "Zoek modellen"), als je de eigen motor niet gebruikt.</li>
+      <li>Bovenin het venster en onderaan zie je altijd <b>welk model</b> er draait, en of dat de eigen motor is.</li>
       <li><b>Stem</b>: aan/uit, 12 stemmen (standaard <b>Leon</b>), <b>spreeksnelheid</b>.</li>
       <li><b>Tekst tegelijk met de stem tonen</b>, en <b>meteen versturen</b> na het praten.</li>
       <li><b>Online zoeken</b> en <b>pc-acties</b> aan of uit.</li>
@@ -116,7 +120,8 @@
   <h2>7. Als iets niet werkt</h2>
   <div class="kaart">
     <table>
-      <tr><th>"Geen taalmodel bereikbaar"</th><td>Start de Llama-app en laad een model. Bij Instellingen: klopt het adres?</td></tr>
+      <tr><th>"Geen taalmodel bereikbaar"</th><td>Staat de eigen motor klaar (Instellingen → Motor)? Is de download afgebroken, klik dan nog eens op <b>Motor downloaden...</b>: hij gaat verder waar hij was. Gebruik je de Llama-app: start die en laad een model.</td></tr>
+      <tr><th>"Eigen motor startte niet"</th><td>Kijk in <b>motor.log</b> in de motor-map. Op een oudere videokaart probeert hij het vanzelf nog eens met minder geheugen.</td></tr>
       <tr><th>Hij verstaat me niet</th><td>Praat iets dichter bij de microfoon en laat pas los als je klaar bent. Bij Instellingen kun je spraakherkenning <b>small</b> kiezen: preciezer, maar trager.</td></tr>
       <tr><th>Geen stem</th><td>Kijk onderaan bij "stem". De eerste keer moet hij downloaden. Staat "Antwoorden hardop uitspreken" aan?</td></tr>
       <tr><th>Hij vindt een programma niet</th><td>Zeg de naam zoals die in het Startmenu staat, of voeg de map toe bij <b>Eigen programma's</b>.</td></tr>
@@ -124,7 +129,7 @@
     <p class="tip"><b>Goed om te weten:</b> DraveJavis gebruikt een klein lokaal taalmodel. Dat is privé en gratis, maar kan zich bij moeilijke vragen vergissen. Bij vragen over de pc meet hij eerst echt, zodat hij geen cijfers verzint.</p>
   </div>
 
-  <div class="voet">DraveJavis 1.0 · Dravenlock (Roger &amp; Claudio) · Je gegevens blijven op je eigen pc (%APPDATA%\DraveJavis).</div>
+  <div class="voet">DraveJavis 1.2 · Dravenlock (Roger &amp; Claudio) · Je gegevens blijven op je eigen pc, in de map DraveJavis-data naast het programma.</div>
 </div>
 </body>
 </html>

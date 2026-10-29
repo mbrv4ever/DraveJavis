@@ -5,3 +5,6 @@ build/
 dist/
 *.spec
 *.log
+DraveJavis-data/
+_release/
+*.bak

@@ -99,7 +99,10 @@ def doe(tekst, geheugen, taal="nl"):
     m = re.match(r"^(onthoud|onthou|remember)( (dat|that))?\s+(.+)$", tekst.strip(), re.I)
     if m:
         feit = geheugen.onthoud(m.group(4))
-        return (("Goed, dat onthoud ik: %s." % feit) if nl else ("Got it, I'll remember: %s." % feit)), None
+        la = getattr(geheugen, "laatste_la", "")
+        if nl:
+            return ("Goed, dat onthoud ik: %s.%s" % (feit, (" Ik leg het in het laatje %s." % la) if la else "")), None
+        return ("Got it, I'll remember: %s.%s" % (feit, (" I'm putting it in the drawer '%s'." % la) if la else "")), None
     m = re.match(r"^(vergeet|forget)( (dat|that|over|about))?\s+(.+)$", tekst.strip(), re.I)
     if m:
         n = geheugen.vergeet(m.group(4).rstrip(".!? "))
@@ -110,8 +113,17 @@ def doe(tekst, geheugen, taal="nl"):
         if not geheugen.feiten:
             return ("Ik heb nog niets onthouden. Zeg maar 'onthoud dat...'." if nl
                     else "I haven't remembered anything yet. Just say 'remember that...'."), None
-        lijst = "; ".join(re.sub(r"\b(mijn|my)\b", lambda m: "jouw" if m.group(1) == "mijn" else "your", f,
-                                 flags=re.I) for f in geheugen.feiten[-12:])
+        def _jij(f):
+            return re.sub(r"\b(mijn|my)\b", lambda m: "jouw" if m.group(1).lower() == "mijn" else "your", f, flags=re.I)
+        try:                                   # per laatje (29-10-2026)
+            delen = geheugen.overzicht()
+            if nl:
+                lijst = " ".join("In het laatje %s: %s." % (la, "; ".join(_jij(f) for f in v)) for la, v in delen)
+            else:
+                lijst = " ".join("In the drawer %s: %s." % (la, "; ".join(_jij(f) for f in v)) for la, v in delen)
+            return (("Dit heb ik onthouden. %s" % lijst) if nl else ("This is what I remember. %s" % lijst)), None
+        except Exception:
+            lijst = "; ".join(_jij(f) for f in geheugen.feiten[-12:])
         return (("Dit heb ik onthouden: %s." % lijst) if nl else ("This is what I remember: %s." % lijst)), None
     # ---- ochtendoverzicht
     if re.match(r"^(goede ?morgen|goeiemorgen|morgen javis|ochtendoverzicht|ochtend overzicht|dagoverzicht|"

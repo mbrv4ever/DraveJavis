@@ -8,7 +8,7 @@
 Geen cloud, geen account, geen abonnement. Je praat met DraveJavis via je microfoon of je typt, en hij antwoordt hardop.
 Alles (taalmodel, stem en spraakherkenning) draait lokaal.
 
-**[⬇️ Download voor Windows](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-1.1.1-Windows.zip)** · [Snelgids (PDF)](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-Snelgids.pdf) · [Hoe installeer ik het?](#️-downloaden-en-starten-makkelijk-geen-python-nodig)
+**[⬇️ Download voor Windows](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-1.2.0-Windows.zip)** · [Snelgids (PDF)](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-Snelgids.pdf) · [Hoe installeer ik het?](#️-downloaden-en-starten-makkelijk-geen-python-nodig)
 
 ## 🎬 Uitlegvideo
 
@@ -18,7 +18,13 @@ Alles (taalmodel, stem en spraakherkenning) draait lokaal.
 
 ## Wat kan hij?
 - **Praten en luisteren**: houd de microfoonknop (of **F2**) ingedrukt, praat, en laat los. Hij antwoordt met een neurale stem, zin voor zin, terwijl het antwoord nog binnenkomt.
-- **Een lokaal taalmodel als brein**: werkt met elke OpenAI-compatibele server op je pc:
+- **Eigen motor** (nieuw in 1.2): DraveJavis start zelf zijn eigen taalmodel (llama.cpp op de videokaart, met
+  het model **Qwen2.5 3B**). Eenmalig downloaden via *Instellingen → Motor downloaden...* naar een map die jij kiest
+  (ongeveer 2 GB). Bovenin het venster zie je altijd welk model er draait. Geen losse app meer nodig.
+- **Geheugen in laatjes** (nieuw in 1.2): wat hij onthoudt, legt hij per onderwerp in een laatje (Mensen, Dieren,
+  Interesses, Eten, Werk, Thuis, Afspraken, Overig) en bij een vraag pakt hij eerst het juiste laatje.
+- **Portable** (nieuw in 1.2): al je gegevens staan in de map `DraveJavis-data` naast het programma, niet meer in AppData.
+- **Of een andere server**: werkt ook met elke OpenAI-compatibele server op je pc:
   [Llama-app (llama.cpp)](https://github.com/ggml-org/llama.cpp), LM Studio, Ollama, Jan of llama.cpp-server.
   Kiest zelf een geladen model (of stel er een vast in).
 - **Zelf direct**: de tijd en de datum, een **timer** ("zet een timer van 5 minuten"), dingen **onthouden**
@@ -41,7 +47,7 @@ Alles (taalmodel, stem en spraakherkenning) draait lokaal.
 
 ## ⬇️ Downloaden en starten (makkelijk, geen Python nodig)
 
-### [👉 Download DraveJavis 1.1.1 voor Windows](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-1.1.1-Windows.zip)
+### [👉 Download DraveJavis 1.2.0 voor Windows](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-1.2.0-Windows.zip)
 
 1. Klik op de link hierboven. Je downloadt een zip-bestand (± 130 MB).
 2. **Pak de zip uit**: rechtsklik op het bestand → **Alles uitpakken...**
@@ -96,7 +102,7 @@ or just type. It answers out loud with a neural voice (neuvoice), understands sp
 with any local OpenAI-compatible model server (Llama app / llama.cpp, LM Studio, Ollama, Jan).
 Built-in skills: time, date, timers, remembering facts, opening websites, and its own web search (DuckDuckGo) with source links. New in 1.1: a spoken **morning briefing** (weather + DraveAgenda appointments) and a **memory made of plain Markdown files** with a fast SQLite search index. New in 1.1.1: the default voice is **Leon**, and Dutch speech reads web addresses, e-mail addresses and abbreviations out in full. Dutch and English.
 
-**Easy install:** [download the Windows zip](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-1.1.1-Windows.zip),
+**Easy install:** [download the Windows zip](https://github.com/mbrv4ever/DraveJavis/releases/latest/download/DraveJavis-1.2.0-Windows.zip),
 unzip it, start a local model app (e.g. LM Studio) with a model, and double-click **DraveJavis.exe**. No Python needed.
 **From source:** Python 3.10–3.13 → `Installeer-DraveJavis.bat` → `Start-DraveJavis.bat`.
 

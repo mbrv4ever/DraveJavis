@@ -28,6 +28,7 @@ from PyQt6.QtWidgets import (QApplication, QWidget, QMainWindow, QLabel, QPushBu
                              QScrollArea, QFrame)
 
 import brein as B
+import drave_motor as DM
 import geheugen as G
 import oren as O
 import stem as S
@@ -37,7 +38,7 @@ import pc as P
 import ochtend as OC
 
 APP = "DraveJavis"
-VERSIE = "1.1.2"
+VERSIE = "1.2.0"
 
 
 def hier(*p):
@@ -54,7 +55,8 @@ T = {
         luistert="luistert", spreekt="spreekt", rust="klaar", fout="Oeps", zoekt="zoekt online",
         bronnen="Bronnen", niets_gevonden="Ik kon daar online niets over vinden.",
         welkom=("Goedendag! Ik ben DraveJavis. Typ iets, of houd de microfoonknop (of F2) ingedrukt en praat. "
-                "Ik heb een lokaal taalmodel nodig: start de Llama-app (of LM Studio / Ollama) en laad een model."),
+                "Ik denk met een lokaal taalmodel. Het makkelijkst is mijn eigen motor: kies Instellingen -> "
+                "Motor downloaden (eenmalig ongeveer 2 GB). Een Llama-app, LM Studio of Ollama kan ook."),
         geen_tekst="Ik verstond niets. Probeer het nog eens, iets dichter bij de microfoon.",
         timer_klaar="Je timer van %s is klaar!", omzetten="even omzetten naar tekst...",
         stem_status=dict(uit="stem: wacht", laden="stem: laden (eerste keer downloaden)...", klaar="stem: klaar",
@@ -233,6 +235,20 @@ class Instellingen(QDialog):
             else len(B.SERVERS)
         self.server_keuze.setCurrentIndex(idx)
         self.server_keuze.currentIndexChanged.connect(self._server)
+        # ---- eigen motor (DraveMotor, 29-10-2026)
+        self.motor_aan = QCheckBox("Eigen motor gebruiken (aanbevolen: geen losse app nodig)")
+        self.motor_aan.setChecked(cfg.get("motor_aan", True))
+        f.addRow("Motor", self.motor_aan)
+        self._motor = DM.van_cfg(cfg)
+        self.motor_lab = QLabel(); self.motor_lab.setWordWrap(True)
+        mrij = QHBoxLayout(); mrij.addWidget(self.motor_lab, 1)
+        self.motor_knop = QPushButton("Motor downloaden..."); self.motor_knop.clicked.connect(self._motor_download)
+        mrij.addWidget(self.motor_knop)
+        f.addRow("", mrij)
+        self._motor_tekst = ""
+        self._motor_bezig = False
+        self._motor_klok = QTimer(self); self._motor_klok.timeout.connect(self._motor_ververs); self._motor_klok.start(500)
+        self._motor_ververs()
         f.addRow("Taalmodel-server", self.server_keuze)
         f.addRow("Adres", self.server)
         rij = QHBoxLayout()
@@ -299,6 +315,50 @@ class Instellingen(QDialog):
         _bw = _bin.minimumSizeHint().width() + 46
         self.resize(min(max(760, _bw), _w - 40), min(760, _h - 80))
 
+    def _motor_ververs(self):
+        if self._motor_bezig:
+            self.motor_lab.setText(self._motor_tekst)
+            return
+        if self._motor.klaar():
+            self.motor_lab.setText("✔ %s staat klaar in %s" % (self._motor.naam, os.path.dirname(self._motor.model)))
+            self.motor_knop.setText("Andere map...")
+        else:
+            self.motor_lab.setText(self._motor_tekst or "Nog niet gedownload. Eenmalig ongeveer 2 GB (motor + model %s)."
+                                   % self._motor.naam)
+            self.motor_knop.setText("Motor downloaden...")
+
+    def _motor_download(self):
+        from PyQt6.QtWidgets import QFileDialog
+        if self._motor_bezig:
+            return
+        start = self._motor.map if os.path.isdir(os.path.dirname(self._motor.map) or ".") else DM.standaard_map()
+        d = QFileDialog.getExistingDirectory(self, "Kies de map voor de motor en het model (liefst niet op C:)",
+                                             os.path.dirname(start) if not os.path.isdir(start) else start)
+        if not d:
+            return
+        if d[:2].upper() == "C:" and QMessageBox.question(
+                self, APP, "Dit is schijf C:. Het model is ongeveer 2 GB. Toch hier neerzetten?") \
+                != QMessageBox.StandardButton.Yes:
+            return
+        self._motor = DM.Motor(d)
+        if self._motor.klaar():
+            self._motor_tekst = ""
+            self._motor_ververs()
+            return
+        self._motor_bezig = True
+        self._motor_tekst = "Downloaden..."
+        self.motor_knop.setEnabled(False)
+
+        def werk():
+            try:
+                self._motor.download(lambda t: setattr(self, "_motor_tekst", t))
+                self._motor_tekst = ""
+            except Exception as e:
+                self._motor_tekst = "Downloaden lukte niet: %s" % e
+            self._motor_bezig = False
+            QTimer.singleShot(0, lambda: self.motor_knop.setEnabled(True))
+        threading.Thread(target=werk, daemon=True).start()
+
     def _server(self, i):
         url = self.server_keuze.itemData(i)
         if url:
@@ -321,6 +381,8 @@ class Instellingen(QDialog):
             model = self.model.currentText().strip()
             if model.startswith("("):
                 model = ""
+        c.update(motor_aan=self.motor_aan.isChecked(), motor_map=self._motor.map, motor_exe=self._motor.exe,
+                 motor_model=self._motor.model)
         c.update(taal=self.taal.currentData(), naam=self.naam.text().strip(), aanspreek=self.aanspreek.text().strip(),
                  server=self.server.text().strip() or B.SERVERS[0][1], model=model or "",
                  stem_aan=self.stem_aan.isChecked(), stem=self.stem.currentText().strip() or "Leon",
@@ -339,6 +401,13 @@ class Javis(QMainWindow):
         self.gh = G.Geheugen()
         c = self.gh.cfg
         self.taal = c.get("taal", "nl")
+        if not c.get("motor_exe") and not c.get("motor_model"):
+            exe, mdl = DM.zoek_bestaande()             # staat er al een DraveMotor/Dave-motor? Dan die gebruiken
+            if exe and mdl:
+                c.update(motor_exe=exe, motor_model=mdl, motor_map=os.path.dirname(mdl))
+                self.gh.bewaar_cfg()
+        self.motor = DM.van_cfg(c)
+        self.motor_soort = ""
         self.brein = B.Brein(c.get("server"), c.get("model"))
         self.stem = S.Stem(c.get("stem", "Leon"), self.taal, c.get("snelheid", 1.05))
         self.stem.aan = c.get("stem_aan", True)
@@ -402,6 +471,14 @@ class Javis(QMainWindow):
 
         rechts = QVBoxLayout()
         self.chat = QTextBrowser(); self.chat.setOpenExternalLinks(True)
+        # Meescrollen (29-10-2026): zodra de tekst langer wordt, gaat het venster mee naar beneden.
+        # Scroll je zelf omhoog om iets terug te lezen, dan blijft hij staan tot je weer onderaan bent.
+        self._meescrollen = True
+        self._html_bezig = False
+        _sb = self.chat.verticalScrollBar()
+        _sb.rangeChanged.connect(lambda _mn, mx: _sb.setValue(mx) if self._meescrollen else None)
+        _sb.valueChanged.connect(lambda v: None if self._html_bezig else
+                                 setattr(self, "_meescrollen", v >= _sb.maximum() - 40))
         rechts.addWidget(self.chat, 1)
         invoer = QHBoxLayout()
         self.invoer = QLineEdit(); self.invoer.returnPressed.connect(self.verstuur_invoer)
@@ -448,7 +525,19 @@ class Javis(QMainWindow):
         self.b_instel.setText(self.t("instel"))
 
     def _zoek_model(self):
-        self.brein.kies_model()
+        c = self.gh.cfg
+        if c.get("motor_aan", True) and self.motor.klaar():
+            self.motor_soort = "motor starten..."
+            if self.motor.start():
+                self.brein = B.Brein(self.motor.url(), "")
+                self.motor_soort = "eigen motor"
+            else:
+                self.motor_soort = "eigen motor startte niet"
+        else:
+            self.motor_soort = ""
+        gevonden = self.brein.kies_model()
+        if self.motor_soort != "eigen motor" and gevonden:
+            self.motor_soort = "Llama-app" if ":9931" in self.brein.url else "server"
         self._ververs_nodig = True
 
     def _toestand(self):
@@ -474,6 +563,11 @@ class Javis(QMainWindow):
         self.toestand_lab.setText({"rust": self.t("rust"), "denkt": self.t("denkt"), "luistert": self.t("luistert"),
                                    "spreekt": self.t("spreekt"), "zoekt": self.t("zoekt")}[st].upper())
         model = self.brein.naam()
+        if self.motor_soort:
+            model = "%s · %s" % (model, self.motor_soort)
+        titel = "%s %s  ·  %s" % (APP, VERSIE, model)
+        if self.windowTitle() != titel:
+            self.setWindowTitle(titel)               # modelnaam bovenin (29-10-2026)
         stem = self.t("stem_status").get(self.stem.status, self.stem.status) if self.stem.aan else "stem: uit"
         oor = self.t("oor_status").get(self.oren.status, self.oren.status)
         self.status.setText("🧠 %s   ·   🔊 %s   ·   🎙 %s" % (model, stem, oor))
@@ -505,9 +599,15 @@ class Javis(QMainWindow):
         if self.bezig:
             toon = self.getoond.strip() if self._sync() else self.lopend
             delen.append(self._bel("assistant", toon or "…"))
-        self.chat.setHtml("<div>%s</div>" % "".join(delen))
         sb = self.chat.verticalScrollBar()
-        sb.setValue(sb.maximum())
+        if len(self.berichten) != getattr(self, "_laatst_aantal", -1):
+            self._laatst_aantal = len(self.berichten)
+            self._meescrollen = True                       # nieuw bericht: altijd naar beneden
+        self._html_bezig = True
+        self.chat.setHtml("<div>%s</div>" % "".join(delen))
+        self._html_bezig = False
+        if self._meescrollen:
+            sb.setValue(sb.maximum())
 
     def _sync(self):
         return (self.gh.cfg.get("tekst_met_stem", True) and self.stem.aan
@@ -961,6 +1061,10 @@ class Javis(QMainWindow):
         self.gh.cfg = c
         self.gh.bewaar_cfg()
         self.taal = c["taal"]
+        nieuwe = DM.van_cfg(c)
+        if (nieuwe.exe, nieuwe.model) != (self.motor.exe, self.motor.model):
+            self.motor.stop()
+            self.motor = nieuwe
         self.brein = B.Brein(c["server"], c["model"])
         threading.Thread(target=self._zoek_model, daemon=True).start()
         self.stem.aan = c["stem_aan"]
@@ -976,6 +1080,10 @@ class Javis(QMainWindow):
 
     def closeEvent(self, e):
         self.stil()
+        try:
+            self.motor.stop()                   # alleen als Javis hem zelf startte
+        except Exception:
+            pass
         e.accept()
 
 
