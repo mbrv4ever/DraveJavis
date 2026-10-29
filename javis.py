@@ -38,7 +38,7 @@ import pc as P
 import ochtend as OC
 
 APP = "DraveJavis"
-VERSIE = "1.2.0"
+VERSIE = "1.2.1"
 
 
 def hier(*p):
@@ -1100,6 +1100,11 @@ def main():
     f = QFont("Segoe UI", 12)
     app.setFont(f)
     w = Javis()
+    try:
+        import drave_doneer
+        drave_doneer.voeg_toe(w)
+    except Exception:
+        pass
     app.installEventFilter(w)
     w.show()
     sys.exit(app.exec())
